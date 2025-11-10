@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Dawood Imperial</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="logo-text">DAWOOD IMPERIAL</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html">Shop All</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html?category=perfumes">Perfumes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html?category=watches">Watches</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+                <div class="navbar-icons">
+                    <a href="#" class="nav-icon" id="searchToggle"><i class="fas fa-search"></i></a>
+                    <a href="wishlist.html" class="nav-icon position-relative">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge-count" id="wishlistCount">0</span>
+                    </a>
+                    <a href="cart.html" class="nav-icon position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge-count" id="cartCount">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for perfumes, watches..." class="search-input">
+            <button class="search-close" id="searchClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- Product Detail Section -->
+    <section class="product-detail-section py-5">
+        <div class="container">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                    <li class="breadcrumb-item active" id="breadcrumbProduct">Product</li>
+                </ol>
+            </nav>
+
+            <div class="row g-5">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-images">
+                        <div class="main-image mb-3">
+                            <img id="mainImage" src="" alt="protuct" class="img-fluid">
+                            <button class="wishlist-btn" id="wishlistBtn">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="thumbnail-images" id="thumbnailImages">
+                            <!-- Thumbnails will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="product-info">
+                        <span class="product-category" id="productCategory"></span>
+                        <h1 class="product-name" id="productName"></h1>
+                        <div class="product-rating mb-3">
+                            <div class="stars" id="productStars"></div>
+                            <span class="rating-text" id="ratingText"></span>
+                        </div>
+                        <div class="product-price mb-4">
+                            <span class="current-price" id="currentPrice"></span>
+                            <span class="original-price" id="originalPrice"></span>
+                            <span class="discount-badge" id="discountBadge"></span>
+                        </div>
+                        <p class="product-description" id="productDescription"></p>
+
+                        <!-- Product Variants -->
+                        <div class="product-variants mb-4" id="productVariants">
+                            <!-- Variants will be loaded dynamically -->
+                        </div>
+
+                        <!-- Quantity Selector -->
+                        <div class="quantity-selector mb-4">
+                            <label>Quantity:</label>
+                            <div class="quantity-controls">
+                                <button class="qty-btn" id="decreaseQty">-</button>
+                                <input type="number" id="quantity" value="1" min="1" max="10">
+                                <button class="qty-btn" id="increaseQty">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="product-actions mb-4">
+                            <button class="btn-luxury btn-add-cart" id="addToCartBtn">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <button class="btn-outline-luxury" id="buyNowBtn">
+                                Buy Now
+                            </button>
+                        </div>
+
+                        <!-- Product Features -->
+                        <div class="product-features">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>100% Authentic</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-truck"></i>
+                                <span>Free Shipping</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-undo"></i>
+                                <span>7-Day Returns</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="product-details mt-4">
+                            <h5>Product Details</h5>
+                            <ul id="productDetailsList">
+                                <!-- Details will be loaded dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Tabs -->
+            <div class="product-tabs mt-5">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description">Description</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#specifications">Specifications</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews">Reviews</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description">
+                        <div class="tab-content-inner" id="tabDescription"></div>
+                    </div>
+                    <div class="tab-pane fade" id="specifications">
+                        <div class="tab-content-inner" id="tabSpecifications"></div>
+                    </div>
+                    <div class="tab-pane fade" id="reviews">
+                        <div class="tab-content-inner">
+                            <div class="reviews-section" id="reviewsSection">
+                                <!-- Reviews will be loaded dynamically -->
+                            </div>
+                            <div class="review-form mt-4">
+                                <h5>Write a Review</h5>
+                                <form id="reviewForm">
+                                    <div class="mb-3">
+                                        <label>Rating:</label>
+                                        <div class="star-rating">
+                                            <i class="far fa-star" data-rating="1"></i>
+                                            <i class="far fa-star" data-rating="2"></i>
+                                            <i class="far fa-star" data-rating="3"></i>
+                                            <i class="far fa-star" data-rating="4"></i>
+                                            <i class="far fa-star" data-rating="5"></i>
+                                        </div>
+                                        <input type="hidden" id="reviewRating" value="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" placeholder="Your Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" rows="4" placeholder="Your Review" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn-luxury">Submit Review</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <div class="related-products mt-5">
+                <h3 class="section-title text-center mb-4">You May Also Like</h3>
+                <div class="row g-4" id="relatedProducts">
+                    <!-- Related products will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h3 class="footer-logo">DAWOOD IMPERIAL</h3>
+                    <p class="footer-text">Your destination for luxury perfumes and timeless watches. Experience elegance redefined.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="footer-heading">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="shop.html">Shop All</a></li>
+                        <li><a href="shop.html?category=perfumes">Perfumes</a></li>
+                        <li><a href="shop.html?category=watches">Watches</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="footer-heading">Contact Info</h5>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Karachi, Pakistan</li>
+                        <li><i class="fas fa-phone"></i> <a href="tel:03208213710">03208213710</a></li>
+                        <li><i class="fas fa-envelope"></i> info@dawoodimperial.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dawood Imperial. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/product-detail.js"></script>
+    <script src="js/main.js"></script>
+    <script>AOS.init({ duration: 800, once: true });</script>
+</body>
+</html>

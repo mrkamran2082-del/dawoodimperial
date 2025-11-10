@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Order System - Dawood Electronics</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .debug-section { background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .output { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ Order System Debugger</h1>
+        <p>This tool helps debug the order confirmation system step by step.</p>
+        
+        <div class="debug-section">
+            <h3>Step 1: Test Local Storage</h3>
+            <button onclick="testLocalStorage()">Test Local Storage</button>
+            <button onclick="clearLocalStorage()">Clear All Data</button>
+            <div id="storageResult" class="output"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 2: Create Test Order</h3>
+            <button onclick="createTestOrder()">Create Sample Order</button>
+            <button onclick="showOrders()">Show All Orders</button>
+            <div id="orderResult" class="output"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 3: Simulate Order Success Page</h3>
+            <button onclick="simulateOrderSuccess()">Test Order Success Page</button>
+            <div id="simulationResult" class="output"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Step 4: Test Redirect</h3>
+            <button onclick="testRedirect()">Test Redirect to Order Success</button>
+            <div id="redirectResult" class="output"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>Quick Actions</h3>
+            <button onclick="runAllTests()">Run All Tests</button>
+            <button onclick="simulateCompleteFlow()">Simulate Complete Order Flow</button>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`[${timestamp}] ${message}`);
+            return `[${timestamp}] ${message}`;
+        }
+        
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `output ${type}`;
+        }
+        
+        // Test functions
+        function testLocalStorage() {
+            try {
+                const testKey = 'debug_test';
+                localStorage.setItem(testKey, 'test_value');
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === 'test_value') {
+                    showResult('storageResult', log('✅ Local Storage is working correctly'), 'success');
+                } else {
+                    showResult('storageResult', log('❌ Local Storage test failed'), 'error');
+                }
+            } catch (error) {
+                showResult('storageResult', log(`❌ Local Storage error: ${error.message}`), 'error');
+            }
+        }
+        
+        function clearLocalStorage() {
+            try {
+                localStorage.removeItem('dawoodCart');
+                localStorage.removeItem('dawoodOrders');
+                localStorage.removeItem('dawoodWishlist');
+                showResult('storageResult', log('✅ All local storage data cleared'), 'success');
+            } catch (error) {
+                showResult('storageResult', log(`❌ Error clearing storage: ${error.message}`), 'error');
+            }
+        }
+        
+        function createTestOrder() {
+            try {
+                const orderId = 'TEST-' + Date.now();
+                const testOrder = {
+                    id: orderId,
+                    date: new Date().toISOString(),
+                    customer: {
+                        firstName: 'Test',
+                        lastName: 'User',
+                        email: 'test@example.com',
+                        phone: '03001234567',
+                        address: '123 Test Street',
+                        city: 'Karachi',
+                        notes: 'Test order from debugger'
+                    },
+                    payment: 'cod',
+                    items: [
+                        {
+                            id: 1,
+                            name: 'Test Smartphone',
+                            brand: 'Test Brand',
+                            price: 25000,
+                            quantity: 1,
+                            subtotal: 25000,
+                            image: 'images/test-phone.jpg'
+                        }
+                    ],
+                    totals: {
+                        subtotal: 25000,
+                        shipping: 150,
+                        total: 25150
+                    },
+                    status: 'Pending'
+                };
+                
+                let orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                orders.push(testOrder);
+                localStorage.setItem('dawoodOrders', JSON.stringify(orders));
+                
+                showResult('orderResult', log(`✅ Test order created: ${orderId}`), 'success');
+                return orderId;
+                
+            } catch (error) {
+                showResult('orderResult', log(`❌ Error creating test order: ${error.message}`), 'error');
+                return null;
+            }
+        }
+        
+        function showOrders() {
+            try {
+                const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                
+                if (orders.length === 0) {
+                    showResult('orderResult', log('ℹ️ No orders found in localStorage'), 'warning');
+                    return;
+                }
+                
+                let result = log(`Found ${orders.length} orders:\n`);
+                orders.forEach((order, index) => {
+                    result += `\n${index + 1}. Order ${order.id} - ${order.customer.firstName} ${order.customer.lastName} - PKR ${order.totals.total} - ${order.payment}`;
+                });
+                
+                showResult('orderResult', result, 'success');
+                
+            } catch (error) {
+                showResult('orderResult', log(`❌ Error reading orders: ${error.message}`), 'error');
+            }
+        }
+        
+        function simulateOrderSuccess() {
+            try {
+                const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                
+                if (orders.length === 0) {
+                    showResult('simulationResult', log('ℹ️ No orders found. Create a test order first.'), 'warning');
+                    return;
+                }
+                
+                const latestOrder = orders[orders.length - 1];
+                const orderId = latestOrder.id;
+                
+                // Simulate the order-success.js logic
+                const urlParams = new URLSearchParams(`orderId=${orderId}`);
+                const retrievedOrderId = urlParams.get('orderId');
+                
+                const foundOrder = orders.find(order => order.id === retrievedOrderId);
+                
+                if (foundOrder) {
+                    let result = log('✅ Order retrieval simulation successful!\n');
+                    result += `Order ID: ${foundOrder.id}\n`;
+                    result += `Customer: ${foundOrder.customer.firstName} ${foundOrder.customer.lastName}\n`;
+                    result += `Total: PKR ${foundOrder.totals.total}\n`;
+                    result += `Payment: ${foundOrder.payment}\n`;
+                    result += `Items: ${foundOrder.items.length} item(s)`;
+                    
+                    showResult('simulationResult', result, 'success');
+                } else {
+                    showResult('simulationResult', log('❌ Order not found in simulation'), 'error');
+                }
+                
+            } catch (error) {
+                showResult('simulationResult', log(`❌ Simulation error: ${error.message}`), 'error');
+            }
+        }
+        
+        function testRedirect() {
+            try {
+                const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                
+                if (orders.length === 0) {
+                    showResult('redirectResult', log('ℹ️ No orders found. Create a test order first.'), 'warning');
+                    return;
+                }
+                
+                const latestOrder = orders[orders.length - 1];
+                const redirectUrl = `order-success.html?orderId=${latestOrder.id}`;
+                
+                showResult('redirectResult', log(`🔄 Would redirect to: ${redirectUrl}\n\nIn a real scenario, the page would redirect to order-success.html with the order ID parameter.`), 'success');
+                
+                // Uncomment the line below to actually redirect for testing
+                // window.location.href = redirectUrl;
+                
+            } catch (error) {
+                showResult('redirectResult', log(`❌ Redirect test error: ${error.message}`), 'error');
+            }
+        }
+        
+        function runAllTests() {
+            log('Starting comprehensive test suite...');
+            
+            testLocalStorage();
+            
+            setTimeout(() => {
+                createTestOrder();
+            }, 1000);
+            
+            setTimeout(() => {
+                showOrders();
+            }, 2000);
+            
+            setTimeout(() => {
+                simulateOrderSuccess();
+            }, 3000);
+            
+            setTimeout(() => {
+                testRedirect();
+            }, 4000);
+        }
+        
+        function simulateCompleteFlow() {
+            log('Simulating complete order flow...');
+            
+            clearLocalStorage();
+            
+            setTimeout(() => {
+                const orderId = createTestOrder();
+                if (orderId) {
+                    setTimeout(() => {
+                        log('Simulating redirect to order success page...');
+                        // Uncomment to actually redirect:
+                        // window.location.href = `order-success.html?orderId=${orderId}`;
+                        showResult('redirectResult', log(`✅ Complete flow simulation finished! Order ID: ${orderId}`), 'success');
+                    }, 1000);
+                }
+            }, 1000);
+        }
+        
+        // Auto-run basic tests on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testLocalStorage();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Order System</title>
+</head>
+<body>
+    <h1>Order System Test</h1>
+    
+    <div id="testResults"></div>
+    
+    <button onclick="testOrderSystem()">Test Order System</button>
+    <button onclick="clearOrders()">Clear All Orders</button>
+    
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        function testOrderSystem() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '';
+            
+            try {
+                // Test 1: Check if cart exists
+                if (typeof cart === 'undefined') {
+                    results.innerHTML += '<p style="color: red;">❌ Cart object not found</p>';
+                    return;
+                }
+                results.innerHTML += '<p style="color: green;">✅ Cart object exists</p>';
+                
+                // Test 2: Add item to cart
+                const product = getProductById(1);
+                if (!product) {
+                    results.innerHTML += '<p style="color: red;">❌ Product not found</p>';
+                    return;
+                }
+                results.innerHTML += '<p style="color: green;">✅ Product found: ' + product.name + '</p>';
+                
+                cart.addItem(1, 1);
+                results.innerHTML += '<p style="color: green;">✅ Item added to cart</p>';
+                
+                // Test 3: Check cart items
+                const cartItems = cart.getItems();
+                results.innerHTML += '<p style="color: green;">✅ Cart items: ' + cartItems.length + '</p>';
+                
+                // Test 4: Test order placement simulation
+                const orderData = {
+                    shipping: {
+                        firstName: 'Test',
+                        lastName: 'User',
+                        address: '123 Test Street',
+                        city: 'Karachi',
+                        email: 'test@example.com',
+                        phone: '03001234567'
+                    },
+                    payment: 'cod',
+                    items: cartItems,
+                    totals: {
+                        subtotal: cart.getTotal(),
+                        shipping: 150,
+                        total: cart.getTotal() + 150,
+                        shippingMethod: 'standard',
+                        city: 'Karachi'
+                    }
+                };
+                
+                // Test 5: Simulate order placement
+                const orderId = 'TEST' + Date.now().toString().slice(-6);
+                const order = {
+                    id: orderId,
+                    date: new Date().toISOString(),
+                    customer: orderData.shipping,
+                    items: orderData.items,
+                    payment: orderData.payment,
+                    totals: orderData.totals,
+                    status: 'Pending'
+                };
+                
+                // Save order to localStorage
+                let orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                orders.push(order);
+                localStorage.setItem('dawoodOrders', JSON.stringify(orders));
+                
+                results.innerHTML += '<p style="color: green;">✅ Order saved successfully!</p>';
+                results.innerHTML += '<p style="color: green;">✅ Order ID: ' + orderId + '</p>';
+                
+                // Test 6: Verify order retrieval
+                const savedOrders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                const savedOrder = savedOrders.find(o => o.id === orderId);
+                
+                if (savedOrder) {
+                    results.innerHTML += '<p style="color: green;">✅ Order retrieved successfully!</p>';
+                    results.innerHTML += '<p style="color: green;">✅ Order status: ' + savedOrder.status + '</p>';
+                } else {
+                    results.innerHTML += '<p style="color: red;">❌ Order not found in storage</p>';
+                }
+                
+                // Test 7: Test formatPrice function
+                if (typeof formatPrice === 'function') {
+                    results.innerHTML += '<p style="color: green;">✅ formatPrice function exists: ' + formatPrice(1000) + '</p>';
+                } else {
+                    results.innerHTML += '<p style="color: red;">❌ formatPrice function not found</p>';
+                }
+                
+            } catch (error) {
+                results.innerHTML += '<p style="color: red;">❌ Error: ' + error.message + '</p>';
+                console.error('Test error:', error);
+            }
+        }
+        
+        function clearOrders() {
+            localStorage.removeItem('dawoodOrders');
+            localStorage.removeItem('dawoodCart');
+            document.getElementById('testResults').innerHTML = '<p style="color: blue;">🗑️ All orders and cart cleared</p>';
+        }
+        
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            document.getElementById('testResults').innerHTML = '<p>Click "Test Order System" to run tests...</p>';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+═══════════════════════════════════════════════════════════════
+          IMAGE SAVE KARNE KI COMPLETE GUIDE
+═══════════════════════════════════════════════════════════════
+
+📁 FOLDER STRUCTURE (Naya Banaya Gaya):
+─────────────────────────────────────────────────────────────
+
+trae/
+  └── shop/
+      └── images/
+          ├── perfumes/    ← Perfume images yahan
+          └── watches/     ← Watch images yahan
+
+
+📸 IMAGES KAHAN SAVE KARNI HAIN:
+─────────────────────────────────────────────────────────────
+
+Image 1 (Rolex Watch):
+  📂 Save Location: shop\images\watches\watch4.jpg
+  ✅ Product: Rolex Yacht-Master
+
+Image 2 (Royal Oud - Orange Bottle):
+  📂 Save Location: shop\images\perfumes\perfume4.jpg
+  ✅ Product: Royal Oud Premium
+
+Image 3 (Royal Oud - Red Bottle):
+  📂 Save Location: shop\images\perfumes\perfume5.jpg
+  ✅ Product: Royal Oud Intense
+
+Image 4 (Que Parfum):
+  📂 Save Location: shop\images\perfumes\perfume6.jpg
+  ✅ Product: Que Parfum Saphir
+
+Image 5 (Diped Utamed):
+  📂 Save Location: shop\images\perfumes\perfume7.jpg
+  ✅ Product: Diped Utamed Parfum
+
+
+🔧 IMAGE SAVE KARNE KA TAREEQA:
+─────────────────────────────────────────────────────────────
+
+1. Apni image ko right-click karein
+2. "Save As" ya "Save Image As" select karein
+3. Upar diye gaye location par save karein
+4. Exact naam use karein (perfume4.jpg, watch4.jpg, etc.)
+
+
+💡 IMPORTANT TIPS:
+─────────────────────────────────────────────────────────────
+
+✓ Image naam exactly same hona chahiye
+✓ Extension .jpg hona chahiye
+✓ Image size 500KB se kam rakhein
+✓ Image quality achi rakhein (minimum 800x800px)
+
+
+🎯 SAVE KARNE KE BAAD:
+─────────────────────────────────────────────────────────────
+
+1. Browser open karein
+2. index.html page refresh karein (F5)
+3. Homepage par "Featured Collection" section check karein
+4. Sab products apni images ke saath dikhengi
+
+
+═══════════════════════════════════════════════════════════════
+
+Agar koi problem ho to mujhe batayein! 😊

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order System Diagnostic - Dawood Imperial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .diagnostic-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+        .status-good { color: #28a745; }
+        .status-bad { color: #dc3545; }
+        .status-warning { color: #ffc107; }
+        .order-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid #d4af37;
+        }
+        .btn-luxury {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            color: #d4af37;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .btn-luxury:hover {
+            background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="display-4 text-dark">
+                <i class="fas fa-stethoscope"></i> Order System Diagnostic
+            </h1>
+            <p class="lead text-muted">Diagnosing invoice and order display issues</p>
+        </div>
+
+        <!-- System Status -->
+        <div class="diagnostic-card">
+            <h3><i class="fas fa-heartbeat"></i> System Status</h3>
+            <div id="systemStatus"></div>
+        </div>
+
+        <!-- LocalStorage Analysis -->
+        <div class="diagnostic-card">
+            <h3><i class="fas fa-database"></i> LocalStorage Analysis</h3>
+            <div id="localStorageAnalysis"></div>
+        </div>
+
+        <!-- Order Creation Test -->
+        <div class="diagnostic-card">
+            <h3><i class="fas fa-plus-circle"></i> Create Test Order</h3>
+            <div class="test-section">
+                <p>Create a sample order to test the system:</p>
+                <button onclick="createTestOrder()" class="btn-luxury">
+                    <i class="fas fa-cart-plus"></i> Create Test Order
+                </button>
+                <button onclick="clearAllData()" class="btn btn-outline-danger ms-2">
+                    <i class="fas fa-trash"></i> Clear All Data
+                </button>
+                <div id="testOrderResult" class="mt-3"></div>
+            </div>
+        </div>
+
+        <!-- Order Testing -->
+        <div class="diagnostic-card">
+            <h3><i class="fas fa-vial"></i> Test Order Pages</h3>
+            <div id="existingOrders"></div>
+        </div>
+
+        <!-- Troubleshooting Guide -->
+        <div class="diagnostic-card">
+            <h3><i class="fas fa-wrench"></i> Troubleshooting Guide</h3>
+            <div id="troubleshooting"></div>
+        </div>
+    </div>
+
+    <script src="js/products.js"></script>
+    <script>
+        // Initialize diagnostic
+        document.addEventListener('DOMContentLoaded', function() {
+            runDiagnostic();
+        });
+
+        function runDiagnostic() {
+            checkSystemStatus();
+            analyzeLocalStorage();
+            displayExistingOrders();
+            showTroubleshooting();
+        }
+
+        function checkSystemStatus() {
+            let html = '';
+            
+            // Check if required functions exist
+            const requiredFunctions = ['getProductById', 'formatPrice', 'getAllProducts'];
+            let allFunctionsExist = true;
+            
+            requiredFunctions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    html += `<div><i class="fas fa-check status-good"></i> ${func}() - Available</div>`;
+                } else {
+                    html += `<div><i class="fas fa-times status-bad"></i> ${func}() - Missing</div>`;
+                    allFunctionsExist = false;
+                }
+            });
+            
+            if (allFunctionsExist) {
+                html += '<div class="mt-2"><strong class="status-good">✅ All required functions are available</strong></div>';
+            } else {
+                html += '<div class="mt-2"><strong class="status-bad">❌ Some required functions are missing</strong></div>';
+            }
+            
+            document.getElementById('systemStatus').innerHTML = html;
+        }
+
+        function analyzeLocalStorage() {
+            let html = '';
+            
+            try {
+                // Check for cart data
+                const cartData = localStorage.getItem('dawoodCart');
+                if (cartData) {
+                    const cart = JSON.parse(cartData);
+                    html += `<div><i class="fas fa-check status-good"></i> Cart Data: ${cart.length} items</div>`;
+                } else {
+                    html += `<div><i class="fas fa-times status-warning"></i> Cart Data: Not found</div>`;
+                }
+                
+                // Check for orders data
+                const ordersData = localStorage.getItem('dawoodOrders');
+                if (ordersData) {
+                    const orders = JSON.parse(ordersData);
+                    html += `<div><i class="fas fa-check status-good"></i> Orders Data: ${orders.length} orders</div>`;
+                    
+                    if (orders.length > 0) {
+                        html += '<div class="mt-2"><strong>Recent Orders:</strong></div>';
+                        orders.slice(-3).forEach(order => {
+                            html += `
+                                <div class="order-item">
+                                    <strong>Order ID:</strong> ${order.id}<br>
+                                    <strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}<br>
+                                    <strong>Total:</strong> Rs ${order.totals.total.toLocaleString()}<br>
+                                    <strong>Items:</strong> ${order.items.length}<br>
+                                    <strong>Payment:</strong> ${order.payment}<br>
+                                    <strong>Status:</strong> ${order.status || 'Unknown'}
+                                </div>
+                            `;
+                        });
+                    }
+                } else {
+                    html += `<div><i class="fas fa-times status-bad"></i> Orders Data: Not found</div>`;
+                }
+                
+                // Check for wishlist data
+                const wishlistData = localStorage.getItem('dawoodWishlist');
+                if (wishlistData) {
+                    const wishlist = JSON.parse(wishlistData);
+                    html += `<div><i class="fas fa-check status-good"></i> Wishlist Data: ${wishlist.length} items</div>`;
+                } else {
+                    html += `<div><i class="fas fa-times status-warning"></i> Wishlist Data: Not found</div>`;
+                }
+                
+            } catch (error) {
+                html += `<div><i class="fas fa-times status-bad"></i> Error analyzing localStorage: ${error.message}</div>`;
+            }
+            
+            document.getElementById('localStorageAnalysis').innerHTML = html;
+        }
+
+        function createTestOrder() {
+            try {
+                // Get sample products
+                const product1 = getProductById(1);
+                const product2 = getProductById(11);
+                
+                if (!product1 || !product2) {
+                    document.getElementById('testOrderResult').innerHTML = 
+                        '<div class="alert alert-danger">❌ Sample products not found. Cannot create test order.</div>';
+                    return;
+                }
+                
+                // Create sample order
+                const testOrder = {
+                    id: 'DI' + Date.now().toString().slice(-8),
+                    date: new Date().toISOString(),
+                    customer: {
+                        firstName: 'Test',
+                        lastName: 'Customer',
+                        email: 'test@example.com',
+                        phone: '03201234567',
+                        address: '123 Test Street, Karachi',
+                        city: 'Karachi',
+                        notes: 'Test order created for diagnostic'
+                    },
+                    items: [
+                        {
+                            id: product1.id,
+                            name: product1.name,
+                            price: product1.price,
+                            quantity: 1,
+                            subtotal: product1.price,
+                            image: product1.image,
+                            brand: product1.brand
+                        },
+                        {
+                            id: product2.id,
+                            name: product2.name,
+                            price: product2.price,
+                            quantity: 1,
+                            subtotal: product2.price,
+                            image: product2.image,
+                            brand: product2.brand
+                        }
+                    ],
+                    payment: 'cod',
+                    totals: {
+                        subtotal: product1.price + product2.price,
+                        shipping: 200,
+                        total: product1.price + product2.price + 200,
+                        shippingMethod: 'standard',
+                        city: 'Karachi'
+                    },
+                    status: 'Pending'
+                };
+                
+                // Save to localStorage
+                let orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                orders.push(testOrder);
+                localStorage.setItem('dawoodOrders', JSON.stringify(orders));
+                
+                document.getElementById('testOrderResult').innerHTML = 
+                    `<div class="alert alert-success">
+                        <strong>✅ Test order created successfully!</strong><br>
+                        Order ID: ${testOrder.id}<br>
+                        Total: Rs ${testOrder.totals.total.toLocaleString()}<br>
+                        Items: ${testOrder.items.length}
+                    </div>`;
+                
+                // Refresh the display
+                analyzeLocalStorage();
+                displayExistingOrders();
+                
+            } catch (error) {
+                document.getElementById('testOrderResult').innerHTML = 
+                    `<div class="alert alert-danger">❌ Error creating test order: ${error.message}</div>`;
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all order data? This cannot be undone.')) {
+                localStorage.removeItem('dawoodOrders');
+                document.getElementById('testOrderResult').innerHTML = 
+                    '<div class="alert alert-warning">ℹ️ All order data cleared.</div>';
+                runDiagnostic();
+            }
+        }
+
+        function displayExistingOrders() {
+            let html = '';
+            
+            try {
+                const ordersData = localStorage.getItem('dawoodOrders');
+                if (!ordersData) {
+                    html = '<div class="alert alert-warning">No orders found in localStorage.</div>';
+                } else {
+                    const orders = JSON.parse(ordersData);
+                    
+                    if (orders.length === 0) {
+                        html = '<div class="alert alert-warning">No orders available. Create a test order first.</div>';
+                    } else {
+                        html = '<div class="row">';
+                        
+                        orders.forEach(order => {
+                            html += `
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-header bg-dark text-white">
+                                            <strong>Order ID:</strong> ${order.id}
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+                                            <p><strong>Customer:</strong> ${order.customer.firstName} ${order.customer.lastName}</p>
+                                            <p><strong>Total:</strong> Rs ${order.totals.total.toLocaleString()}</p>
+                                            <p><strong>Payment:</strong> ${order.payment}</p>
+                                            <p><strong>Status:</strong> ${order.status || 'Unknown'}</p>
+                                            <hr>
+                                            <div class="d-grid gap-2">
+                                                <a href="order-success.html?orderId=${order.id}" target="_blank" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-external-link-alt"></i> Test Order Success Page
+                                                </a>
+                                                <a href="invoice.html?orderId=${order.id}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-file-invoice"></i> Test Invoice Page
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                    }
+                }
+            } catch (error) {
+                html = `<div class="alert alert-danger">Error displaying orders: ${error.message}</div>`;
+            }
+            
+            document.getElementById('existingOrders').innerHTML = html;
+        }
+
+        function showTroubleshooting() {
+            const html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Common Issues:</h5>
+                        <ul>
+                            <li><strong>No orders showing:</strong> Create a test order using the button above</li>
+                            <li><strong>Order success page not working:</strong> Check if order ID is in URL</li>
+                            <li><strong>Invoice not loading:</strong> Verify order exists in localStorage</li>
+                            <li><strong>Missing order data:</strong> Check browser console for errors</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Quick Solutions:</h5>
+                        <ul>
+                            <li>Create a test order to verify the system works</li>
+                            <li>Check browser console (F12) for JavaScript errors</li>
+                            <li>Ensure you're accessing pages with correct order ID in URL</li>
+                            <li>Clear browser cache if styles aren't loading</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h5>How to Access Order Pages:</h5>
+                    <p><strong>Order Success Page:</strong> <code>order-success.html?orderId=YOUR_ORDER_ID</code></p>
+                    <p><strong>Invoice Page:</strong> <code>invoice.html?orderId=YOUR_ORDER_ID</code></p>
+                    <p class="text-muted">Replace YOUR_ORDER_ID with an actual order ID from the list above.</p>
+                </div>
+            `;
+            
+            document.getElementById('troubleshooting').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Dawood Imperial</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="logo-text">DAWOOD IMPERIAL</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html">Shop All</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html?category=perfumes">Perfumes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="shop.html?category=watches">Watches</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                </ul>
+                <div class="navbar-icons">
+                    <a href="cart.html" class="nav-icon position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge-count" id="cartCount">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Checkout</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="cart.html">Cart</a></li>
+                    <li class="breadcrumb-item active">Checkout</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section py-5">
+        <div class="container">
+            <!-- Progress Steps -->
+            <div class="checkout-steps mb-5">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Shipping</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Payment</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Checkout Form -->
+                <div class="col-lg-8">
+                    <form id="checkoutForm">
+                        <!-- Step 1: Shipping Information -->
+                        <div class="checkout-card step-content active" id="step1">
+                            <h4 class="card-title">Shipping Information</h4>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" name="firstName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" name="lastName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" name="phone" placeholder="03208213710" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Address *</label>
+                                    <input type="text" class="form-control" name="address" placeholder="Complete delivery address" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">City *</label>
+                                    <select class="form-control" name="city" id="citySelect" required>
+                                        <option value="">Select your city</option>
+                                        <option value="Karachi">Karachi</option>
+                                        <option value="Lahore">Lahore</option>
+                                        <option value="Islamabad">Islamabad</option>
+                                        <option value="Rawalpindi">Rawalpindi</option>
+                                        <option value="Faisalabad">Faisalabad</option>
+                                        <option value="Multan">Multan</option>
+                                        <option value="Peshawar">Peshawar</option>
+                                        <option value="Quetta">Quetta</option>
+                                        <option value="Sialkot">Sialkot</option>
+                                        <option value="Gujranwala">Gujranwala</option>
+                                        <option value="Other">Other City</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Order Notes (Optional)</label>
+                                    <textarea class="form-control" name="notes" rows="3" placeholder="Special instructions for delivery"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Shipping Method</label>
+                                    <div class="form-select-group" id="shippingMethodsContainer">
+                                        <label class="form-check">
+                                            <input type="radio" name="shippingMethod" value="standard" checked>
+                                            <span id="standardShippingLabel">Standard Delivery (2-5 days) - PKR 200</span>
+                                        </label>
+                                        <label class="form-check mt-2">
+                                            <input type="radio" name="shippingMethod" value="express">
+                                            <span id="expressShippingLabel">Express Delivery (1-2 days) - PKR 500</span>
+                                        </label>
+                                        <label class="form-check mt-2">
+                                            <input type="radio" name="shippingMethod" value="pickup">
+                                            <span>Store Pickup (Karachi Only) - FREE</span>
+                                        </label>
+                                    </div>
+                                    <div class="alert alert-info mt-3" id="shippingInfo" style="display: none;">
+                                        <i class="fas fa-info-circle"></i> <span id="shippingInfoText"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions mt-4">
+                                <button type="button" class="btn-luxury" id="continueToPayment">
+                                    Continue to Payment <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Payment Method -->
+                        <div class="checkout-card step-content" id="step2">
+                            <h4 class="card-title">Payment Method</h4>
+                            
+                            <div class="payment-methods">
+                                <label class="payment-option" id="codPaymentOption">
+                                    <input type="radio" name="paymentMethod" value="cod" checked>
+                                    <div class="payment-card">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <div class="payment-info">
+                                            <h5>Cash on Delivery</h5>
+                                            <p id="codDescription">Pay when you receive your order (Karachi only)</p>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="card">
+                                    <div class="payment-card">
+                                        <i class="fas fa-credit-card"></i>
+                                        <div class="payment-info">
+                                            <h5>Credit/Debit Card</h5>
+                                            <p>Secure payment via card</p>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="jazzcash">
+                                    <div class="payment-card">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <div class="payment-info">
+                                            <h5>JazzCash</h5>
+                                            <p>Pay via JazzCash mobile wallet</p>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="easypaisa">
+                                    <div class="payment-card">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <div class="payment-info">
+                                            <h5>Easypaisa</h5>
+                                            <p>Pay via Easypaisa mobile wallet</p>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="bank">
+                                    <div class="payment-card">
+                                        <i class="fas fa-university"></i>
+                                        <div class="payment-info">
+                                            <h5>Bank Account</h5>
+                                            <p>Direct bank account transfer</p>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Card Payment Form (Hidden by default) -->
+                            <div class="card-payment-form mt-4" id="cardPaymentForm" style="display: none;">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Card Number</label>
+                                        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Expiry Date</label>
+                                        <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">CVV</label>
+                                        <input type="text" class="form-control" placeholder="123" maxlength="3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions mt-4">
+                                <button type="button" class="btn-outline-luxury" id="backToShipping">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="btn-luxury" id="continueToReview">
+                                    Review Order <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Order Review -->
+                        <div class="checkout-card step-content" id="step3">
+                            <h4 class="card-title">Review Your Order</h4>
+                            
+                            <div class="review-section">
+                                <h5>Shipping Address</h5>
+                                <div id="reviewAddress" class="review-info"></div>
+                            </div>
+
+                            <div class="review-section">
+                                <h5>Payment Method</h5>
+                                <div id="reviewPayment" class="review-info"></div>
+                            </div>
+
+                            <div class="review-section">
+                                <h5>Order Items</h5>
+                                <div id="reviewItems" class="review-items"></div>
+                            </div>
+
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label" for="termsCheck">
+                                    I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <div class="form-actions mt-4">
+                                <button type="button" class="btn-outline-luxury" id="backToPayment">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button type="submit" class="btn-luxury" id="placeOrderBtn">
+                                    <i class="fas fa-check"></i> Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="checkout-summary">
+                        <h4 class="summary-title">Order Summary</h4>
+                        
+                        <div class="summary-items" id="summaryItems">
+                            <!-- Items will be loaded dynamically -->
+                        </div>
+
+                        <div class="summary-totals">
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span id="summarySubtotal">PKR 0</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span id="summaryShipping">PKR 0</span>
+                            </div>
+                            <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
+                                <span>Discount</span>
+                                <span id="summaryDiscount">- PKR 0</span>
+                            </div>
+                            <hr>
+                            <div class="summary-row total-row">
+                                <span>Total</span>
+                                <span id="summaryTotal">PKR 0</span>
+                            </div>
+                        </div>
+
+                        <div class="trust-badges mt-4">
+                            <div class="trust-item">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure Checkout</span>
+                            </div>
+                            <div class="trust-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>100% Authentic Products</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h3 class="footer-logo">DAWOOD IMPERIAL</h3>
+                    <p class="footer-text">Your destination for luxury perfumes and timeless watches. Experience elegance redefined.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="footer-heading">Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="shop.html">Shop All</a></li>
+                        <li><a href="shop.html?category=perfumes">Perfumes</a></li>
+                        <li><a href="shop.html?category=watches">Watches</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="footer-heading">Contact Info</h5>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Karachi, Pakistan</li>
+                        <li><i class="fas fa-phone"></i> <a href="tel:03208213710">03208213710</a></li>
+                        <li><i class="fas fa-envelope"></i> info@dawoodimperial.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Dawood Imperial. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/checkout.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+        // Ensure checkout initializes
+        if (typeof initCheckout === 'function' && document.getElementById('checkoutForm')) {
+            initCheckout();
+        }
+    </script>
+</body>
+</html>

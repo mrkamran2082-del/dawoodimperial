@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Flow Test - Dawood Electronics</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .test-button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; margin: 5px; }
+        .test-button:hover { background: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .log-entry { margin: 5px 0; padding: 5px; border-left: 3px solid #ccc; }
+        .log-success { border-left-color: green; }
+        .log-error { border-left-color: red; }
+        .log-warning { border-left-color: orange; }
+        #testResults { background: white; padding: 15px; border-radius: 3px; max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Order Flow Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button class="test-button" onclick="runFullTest()">Run Complete Order Flow Test</button>
+        <button class="test-button" onclick="clearAllData()">Clear All Test Data</button>
+        <button class="test-button" onclick="simulateOrderPlacement()">Simulate Order Placement</button>
+        <button class="test-button" onclick="testOrderRetrieval()">Test Order Retrieval</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Local Storage Status</h2>
+        <div id="storageStatus"></div>
+    </div>
+
+    <!-- Include required scripts -->
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        let testResults = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            testResults.push({ message: logEntry, type });
+            
+            const resultsDiv = document.getElementById('testResults');
+            const logElement = document.createElement('div');
+            logElement.className = `log-entry log-${type}`;
+            logElement.textContent = logEntry;
+            resultsDiv.appendChild(logElement);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+            
+            console.log(`[TEST ${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearTestResults() {
+            testResults = [];
+            document.getElementById('testResults').innerHTML = '';
+        }
+        
+        function updateStorageStatus() {
+            const storageDiv = document.getElementById('storageStatus');
+            let html = '<h3>Local Storage Contents:</h3>';
+            
+            try {
+                // Check cart
+                const cart = localStorage.getItem('dawoodCart');
+                if (cart) {
+                    const cartData = JSON.parse(cart);
+                    html += `<p><strong>Cart:</strong> ${cartData.items ? cartData.items.length : 0} items</p>`;
+                } else {
+                    html += '<p><strong>Cart:</strong> Empty</p>';
+                }
+                
+                // Check orders
+                const orders = localStorage.getItem('dawoodOrders');
+                if (orders) {
+                    const ordersData = JSON.parse(orders);
+                    html += `<p><strong>Orders:</strong> ${ordersData.length} orders</p>`;
+                    if (ordersData.length > 0) {
+                        html += '<ul>';
+                        ordersData.forEach(order => {
+                            html += `<li>Order ${order.id} - ${order.customer.firstName} ${order.customer.lastName} - ${order.totals.total}</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                } else {
+                    html += '<p><strong>Orders:</strong> None</p>';
+                }
+                
+                // Check wishlist
+                const wishlist = localStorage.getItem('dawoodWishlist');
+                if (wishlist) {
+                    const wishlistData = JSON.parse(wishlist);
+                    html += `<p><strong>Wishlist:</strong> ${wishlistData.items ? wishlistData.items.length : 0} items</p>`;
+                } else {
+                    html += '<p><strong>Wishlist:</strong> Empty</p>';
+                }
+                
+            } catch (error) {
+                html += `<p class="error">Error reading local storage: ${error.message}</p>`;
+            }
+            
+            storageDiv.innerHTML = html;
+        }
+        
+        function testCartSystem() {
+            log('Testing cart system...', 'info');
+            
+            try {
+                // Test if cart exists
+                if (typeof cart === 'undefined') {
+                    log('Cart object not found - this is expected in test environment', 'warning');
+                    return false;
+                }
+                
+                // Test cart methods
+                log(`Cart items: ${cart.getItemCount()}`, 'info');
+                log(`Cart total: ${cart.getTotal()}`, 'info');
+                
+                // Test adding item
+                if (products && products.length > 0) {
+                    const testProduct = products[0];
+                    cart.addItem(testProduct);
+                    log(`Added ${testProduct.name} to cart`, 'success');
+                    log(`Cart now has ${cart.getItemCount()} items`, 'info');
+                    
+                    // Test removing item
+                    cart.removeItem(testProduct.id);
+                    log(`Removed ${testProduct.name} from cart`, 'success');
+                    log(`Cart now has ${cart.getItemCount()} items`, 'info');
+                }
+                
+                return true;
+            } catch (error) {
+                log(`Cart system error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        function testLocalStorage() {
+            log('Testing local storage...', 'info');
+            
+            try {
+                // Test storage availability
+                const testKey = 'test_key';
+                localStorage.setItem(testKey, 'test_value');
+                const retrieved = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (retrieved === 'test_value') {
+                    log('Local storage is working correctly', 'success');
+                    return true;
+                } else {
+                    log('Local storage test failed', 'error');
+                    return false;
+                }
+            } catch (error) {
+                log(`Local storage error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        function testUtilityFunctions() {
+            log('Testing utility functions...', 'info');
+            
+            try {
+                // Test formatPrice
+                if (typeof formatPrice === 'function') {
+                    const testPrice = formatPrice(1000);
+                    log(`formatPrice(1000) = ${testPrice}`, 'info');
+                } else {
+                    log('formatPrice function not found', 'warning');
+                }
+                
+                // Test generateOrderId
+                if (typeof generateOrderId === 'function') {
+                    const orderId = generateOrderId();
+                    log(`Generated order ID: ${orderId}`, 'info');
+                } else {
+                    log('generateOrderId function not found - will create custom ID', 'warning');
+                }
+                
+                return true;
+            } catch (error) {
+                log(`Utility functions error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        function simulateOrderPlacement() {
+            log('Simulating order placement...', 'info');
+            
+            try {
+                // Create sample order data
+                const sampleOrder = {
+                    id: 'TEST-' + Date.now(),
+                    date: new Date().toISOString(),
+                    customer: {
+                        firstName: 'Test',
+                        lastName: 'User',
+                        email: 'test@example.com',
+                        phone: '03001234567',
+                        address: '123 Test Street',
+                        city: 'Karachi',
+                        notes: 'Test order'
+                    },
+                    payment: 'cod',
+                    items: [
+                        {
+                            id: 1,
+                            name: 'Test Product',
+                            brand: 'Test Brand',
+                            price: 1000,
+                            quantity: 2,
+                            subtotal: 2000,
+                            image: 'images/test-product.jpg'
+                        }
+                    ],
+                    totals: {
+                        subtotal: 2000,
+                        shipping: 200,
+                        total: 2200
+                    }
+                };
+                
+                // Save to localStorage
+                let orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                orders.push(sampleOrder);
+                localStorage.setItem('dawoodOrders', JSON.stringify(orders));
+                
+                log(`Created test order: ${sampleOrder.id}`, 'success');
+                return sampleOrder.id;
+                
+            } catch (error) {
+                log(`Order placement error: ${error.message}`, 'error');
+                return null;
+            }
+        }
+        
+        function testOrderRetrieval() {
+            log('Testing order retrieval...', 'info');
+            
+            try {
+                const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                
+                if (orders.length === 0) {
+                    log('No orders found in localStorage', 'warning');
+                    return false;
+                }
+                
+                log(`Found ${orders.length} orders`, 'info');
+                
+                // Test retrieving the most recent order
+                const latestOrder = orders[orders.length - 1];
+                log(`Latest order: ${latestOrder.id} - ${latestOrder.customer.firstName} ${latestOrder.customer.lastName}`, 'info');
+                
+                // Test URL parameter simulation
+                const urlParams = new URLSearchParams(`orderId=${latestOrder.id}`);
+                const orderId = urlParams.get('orderId');
+                
+                const foundOrder = orders.find(order => order.id === orderId);
+                if (foundOrder) {
+                    log(`Successfully retrieved order from URL parameter: ${foundOrder.id}`, 'success');
+                    return true;
+                } else {
+                    log('Could not find order matching URL parameter', 'error');
+                    return false;
+                }
+                
+            } catch (error) {
+                log(`Order retrieval error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+        
+        function clearAllData() {
+            log('Clearing all test data...', 'info');
+            
+            try {
+                localStorage.removeItem('dawoodCart');
+                localStorage.removeItem('dawoodOrders');
+                localStorage.removeItem('dawoodWishlist');
+                
+                log('All test data cleared', 'success');
+                updateStorageStatus();
+                
+            } catch (error) {
+                log(`Error clearing data: ${error.message}`, 'error');
+            }
+        }
+        
+        function runFullTest() {
+            clearTestResults();
+            log('Starting complete order flow test...', 'info');
+            
+            let testsPassed = 0;
+            let totalTests = 0;
+            
+            // Test 1: Local Storage
+            totalTests++;
+            if (testLocalStorage()) testsPassed++;
+            
+            // Test 2: Utility Functions
+            totalTests++;
+            if (testUtilityFunctions()) testsPassed++;
+            
+            // Test 3: Cart System
+            totalTests++;
+            if (testCartSystem()) testsPassed++;
+            
+            // Test 4: Order Placement
+            totalTests++;
+            const orderId = simulateOrderPlacement();
+            if (orderId) testsPassed++;
+            
+            // Test 5: Order Retrieval
+            totalTests++;
+            if (testOrderRetrieval()) testsPassed++;
+            
+            // Final results
+            log(`Test completed: ${testsPassed}/${totalTests} tests passed`, 
+                testsPassed === totalTests ? 'success' : 'warning');
+            
+            updateStorageStatus();
+            
+            // Test redirect simulation
+            if (orderId) {
+                log(`Simulating redirect to order-success.html?orderId=${orderId}`, 'info');
+                // In a real test, you would redirect here
+                // window.location.href = `order-success.html?orderId=${orderId}`;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Order flow test page loaded', 'info');
+            updateStorageStatus();
+            
+            // Auto-run basic tests
+            setTimeout(() => {
+                log('Running automatic basic tests...', 'info');
+                testLocalStorage();
+                testUtilityFunctions();
+                updateStorageStatus();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

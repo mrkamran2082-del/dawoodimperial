@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Orders - Diagnostic</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Order System Diagnostic</h1>
+    
+    <div class="section">
+        <h2>LocalStorage Status</h2>
+        <div id="localStorageStatus"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Sample Order Creation</h2>
+        <button onclick="createSampleOrder()">Create Sample Order</button>
+        <button onclick="clearAllOrders()">Clear All Orders</button>
+        <div id="sampleOrderResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Test Order Success Page</h2>
+        <button onclick="testOrderSuccess()">Test Order Success</button>
+        <div id="orderSuccessResult"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Test Invoice Page</h2>
+        <button onclick="testInvoicePage()">Test Invoice Page</button>
+        <div id="invoiceResult"></div>
+    </div>
+
+    <script src="js/products.js"></script>
+    <script>
+        function updateLocalStorageStatus() {
+            const cartData = localStorage.getItem('dawoodCart');
+            const ordersData = localStorage.getItem('dawoodOrders');
+            
+            let html = '';
+            
+            if (cartData) {
+                const cart = JSON.parse(cartData);
+                html += `<p class="success">✅ Cart Data Found (${cart.length} items)</p>`;
+            } else {
+                html += `<p class="error">❌ Cart Data Not Found</p>`;
+            }
+            
+            if (ordersData) {
+                const orders = JSON.parse(ordersData);
+                html += `<p class="success">✅ Orders Data Found (${orders.length} orders)</p>`;
+                html += `<pre>${JSON.stringify(orders, null, 2)}</pre>`;
+            } else {
+                html += `<p class="error">❌ Orders Data Not Found</p>`;
+            }
+            
+            document.getElementById('localStorageStatus').innerHTML = html;
+        }
+        
+        function createSampleOrder() {
+            try {
+                // Get sample products
+                const product1 = getProductById(1);
+                const product2 = getProductById(11);
+                
+                if (!product1 || !product2) {
+                    document.getElementById('sampleOrderResult').innerHTML = 
+                        '<p class="error">❌ Sample products not found</p>';
+                    return;
+                }
+                
+                // Create sample order
+                const sampleOrder = {
+                    id: 'DI' + Date.now().toString().slice(-8),
+                    date: new Date().toISOString(),
+                    customer: {
+                        firstName: 'Test',
+                        lastName: 'Customer',
+                        email: 'test@example.com',
+                        phone: '03201234567',
+                        address: '123 Test Street, Karachi',
+                        city: 'Karachi',
+                        notes: 'Sample order for testing'
+                    },
+                    items: [
+                        {
+                            id: product1.id,
+                            name: product1.name,
+                            price: product1.price,
+                            quantity: 1,
+                            subtotal: product1.price,
+                            image: product1.image,
+                            brand: product1.brand
+                        },
+                        {
+                            id: product2.id,
+                            name: product2.name,
+                            price: product2.price,
+                            quantity: 1,
+                            subtotal: product2.price,
+                            image: product2.image,
+                            brand: product2.brand
+                        }
+                    ],
+                    payment: 'cod',
+                    totals: {
+                        subtotal: product1.price + product2.price,
+                        shipping: 200,
+                        total: product1.price + product2.price + 200,
+                        shippingMethod: 'standard',
+                        city: 'Karachi'
+                    },
+                    status: 'Pending'
+                };
+                
+                // Save to localStorage
+                let orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+                orders.push(sampleOrder);
+                localStorage.setItem('dawoodOrders', JSON.stringify(orders));
+                
+                document.getElementById('sampleOrderResult').innerHTML = 
+                    `<p class="success">✅ Sample order created: ${sampleOrder.id}</p>`;
+                
+                updateLocalStorageStatus();
+                
+            } catch (error) {
+                document.getElementById('sampleOrderResult').innerHTML = 
+                    `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        function clearAllOrders() {
+            localStorage.removeItem('dawoodOrders');
+            document.getElementById('sampleOrderResult').innerHTML = 
+                '<p class="info">ℹ️ All orders cleared</p>';
+            updateLocalStorageStatus();
+        }
+        
+        function testOrderSuccess() {
+            const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+            if (orders.length === 0) {
+                document.getElementById('orderSuccessResult').innerHTML = 
+                    '<p class="error">❌ No orders found. Create a sample order first.</p>';
+                return;
+            }
+            
+            const latestOrder = orders[orders.length - 1];
+            window.open(`order-success.html?orderId=${latestOrder.id}`, '_blank');
+            document.getElementById('orderSuccessResult').innerHTML = 
+                `<p class="success">✅ Opening order success page for: ${latestOrder.id}</p>`;
+        }
+        
+        function testInvoicePage() {
+            const orders = JSON.parse(localStorage.getItem('dawoodOrders') || '[]');
+            if (orders.length === 0) {
+                document.getElementById('invoiceResult').innerHTML = 
+                    '<p class="error">❌ No orders found. Create a sample order first.</p>';
+                return;
+            }
+            
+            const latestOrder = orders[orders.length - 1];
+            window.open(`invoice.html?orderId=${latestOrder.id}`, '_blank');
+            document.getElementById('invoiceResult').innerHTML = 
+                `<p class="success">✅ Opening invoice page for: ${latestOrder.id}</p>`;
+        }
+        
+        // Initialize on page load
+        updateLocalStorageStatus();
+    </script>
+</body>
+</html>

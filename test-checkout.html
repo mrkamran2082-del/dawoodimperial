@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Checkout Process - Dawood Imperial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+        .btn-test {
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-test:hover {
+            background: #333;
+        }
+        .status {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Checkout Process Tester</h1>
+        
+        <div class="test-section">
+            <h3>1. Add Test Products to Cart</h3>
+            <p>Pehle cart mein products add karein:</p>
+            <button class="btn-test" onclick="addTestProduct(1)">Add Perfume (Rs 15,000)</button>
+            <button class="btn-test" onclick="addTestProduct(11)">Add Watch (Rs 45,000)</button>
+            <button class="btn-test" onclick="clearCart()">Clear Cart</button>
+            <div id="cartStatus" class="status info" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Check Cart Status</h3>
+            <button class="btn-test" onclick="checkCart()">View Cart Items</button>
+            <div id="cartItems" class="status info" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test Navigation</h3>
+            <button class="btn-test" onclick="goToCart()">Go to Cart Page</button>
+            <button class="btn-test" onclick="goToCheckout()">Go to Checkout</button>
+            <button class="btn-test" onclick="goToShop()">Go to Shop</button>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Check LocalStorage</h3>
+            <button class="btn-test" onclick="checkLocalStorage()">Check Storage</button>
+            <div id="storageStatus" class="status info" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Test Complete Flow</h3>
+            <p>Yeh button automatically:</p>
+            <ol>
+                <li>Cart clear karega</li>
+                <li>2 products add karega</li>
+                <li>Cart page pe redirect karega</li>
+            </ol>
+            <button class="btn-test" onclick="testCompleteFlow()">Start Complete Test</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Pehle "Add Test Products" buttons se products add karein</li>
+                <li>"View Cart Items" se check karein ke products add hue ya nahi</li>
+                <li>"Go to Cart Page" pe jaake cart dekhen</li>
+                <li>Cart page se "Proceed to Checkout" button click karein</li>
+                <li>Checkout form fill karein:
+                    <ul>
+                        <li>Name, Email, Phone</li>
+                        <li>Complete Address</li>
+                        <li>City (e.g., Karachi)</li>
+                        <li>Shipping Method select karein</li>
+                        <li>Payment Method select karein</li>
+                    </ul>
+                </li>
+                <li>Order review karein aur "Place Order" click karein</li>
+                <li>Invoice download karein</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        function addTestProduct(id) {
+            try {
+                const product = getProductById(id);
+                if (product) {
+                    cart.addItem(product, 1);
+                    showStatus('cartStatus', `✅ ${product.name} added to cart!`, 'success');
+                } else {
+                    showStatus('cartStatus', '❌ Product not found!', 'error');
+                }
+            } catch (error) {
+                showStatus('cartStatus', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function clearCart() {
+            cart.clear();
+            showStatus('cartStatus', '🗑️ Cart cleared!', 'info');
+        }
+
+        function checkCart() {
+            const items = cart.getItems();
+            const count = cart.getItemCount();
+            const total = cart.getTotal();
+            
+            let html = `<strong>Cart Summary:</strong><br>`;
+            html += `Items: ${count}<br>`;
+            html += `Total: ${formatPrice(total)}<br><br>`;
+            
+            if (items.length > 0) {
+                html += `<strong>Products:</strong><br>`;
+                items.forEach(item => {
+                    html += `- ${item.name} (Qty: ${item.quantity}) - ${formatPrice(item.subtotal)}<br>`;
+                });
+            } else {
+                html += `Cart is empty!`;
+            }
+            
+            showStatus('cartItems', html, 'info');
+        }
+
+        function goToCart() {
+            window.location.href = 'cart.html';
+        }
+
+        function goToCheckout() {
+            if (cart.getItemCount() > 0) {
+                window.location.href = 'checkout.html';
+            } else {
+                alert('Cart is empty! Please add products first.');
+            }
+        }
+
+        function goToShop() {
+            window.location.href = 'shop.html';
+        }
+
+        function checkLocalStorage() {
+            const cartData = localStorage.getItem('dawoodCart');
+            const ordersData = localStorage.getItem('dawoodOrders');
+            
+            let html = `<strong>LocalStorage Status:</strong><br>`;
+            html += `Cart Data: ${cartData ? '✅ Found' : '❌ Empty'}<br>`;
+            html += `Orders Data: ${ordersData ? '✅ Found' : '❌ Empty'}<br><br>`;
+            
+            if (cartData) {
+                const cart = JSON.parse(cartData);
+                html += `Cart Items: ${cart.length}<br>`;
+            }
+            
+            if (ordersData) {
+                const orders = JSON.parse(ordersData);
+                html += `Total Orders: ${orders.length}<br>`;
+            }
+            
+            showStatus('storageStatus', html, 'info');
+        }
+
+        function testCompleteFlow() {
+            // Clear cart
+            cart.clear();
+            
+            // Add 2 products
+            const product1 = getProductById(1); // Perfume
+            const product2 = getProductById(11); // Watch
+            
+            if (product1) cart.addItem(product1, 1);
+            if (product2) cart.addItem(product2, 1);
+            
+            // Show confirmation
+            alert('✅ Test products added!\n\nRedirecting to cart page...');
+            
+            // Redirect to cart
+            setTimeout(() => {
+                window.location.href = 'cart.html';
+            }, 1000);
+        }
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `status ${type}`;
+            element.style.display = 'block';
+        }
+
+        // Auto-check on load
+        window.onload = () => {
+            checkCart();
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>
